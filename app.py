@@ -3,11 +3,18 @@ from flask_cors import CORS
 import sqlite3
 import random
 from datetime import datetime
+import os
+import google.generativeai as genai # Gemini AI লাইব্রেরি
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app, resources={r"/api/*": {"origins": "https://sami21-lgtm.github.io"}})
 
 DATABASE = 'sami_ai.db'
+
+# ⚠️ এখানে আপনার Google Gemini API Key বসান (এটি ফ্রি, Google AI Studio থেকে নিতে পারবেন)
+# অথবা আপনার Environment Variable থেকে নিতে পারেন: os.getenv("GEMINI_API_KEY")
+genai.configure(api_key="YOUR_GEMINI_API_KEY_HERE") 
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def get_db():
     conn = sqlite3.connect(DATABASE)
@@ -45,40 +52,6 @@ def contains_adult_content(text):
     text_lower = text.lower()
     return any(word in text_lower for word in BANNED_WORDS)
 
-def generate_bangla_response(message):
-    msg = message.strip().lower()
-    if any(w in msg for w in ['তুমি কে', 'কে তুমি', 'who are you', 'who r u', 'আপনি কে']):
-        return ("আমি সামি এআই, একটি বাংলা ভাষার চ্যাটবট।\nআমাকে তৈরি করেছেন মোঃ এমতিয়াজ হোসেন সামি,\nডিপার্টমেন্ট অফ সফটওয়্যার ইঞ্জিনিয়ারিং,\nড্যাফোডিল ইন্টারন্যাশনাল ইউনিভার্সিটি।")
-    if any(w in msg for w in ['কে বানিয়েছে', 'তোমার নির্মাতা', 'developer', 'who made you']):
-        return "আমাকে তৈরি করেছেন মোঃ এমতিয়াজ হোসেন সামি।"
-    if 'ড্যাফোডিল' in msg or 'daffodil' in msg or 'diu' in msg:
-        return "ড্যাফোডিল ইন্টারন্যাশনাল ইউনিভার্সিটি বাংলাদেশের অন্যতম সেরা বেসরকারি বিশ্ববিদ্যালয়। এখানে সফটওয়্যার ইঞ্জিনিয়ারিংসহ অনেক চমৎকার প্রোগ্রাম রয়েছে।"
-    if 'সফটওয়্যার' in msg or 'software' in msg:
-        return "সফটওয়্যার ইঞ্জিনিয়ারিং একটি অসাধারণ ক্ষেত্র, যেখানে আপনি প্রোগ্রামিং, সিস্টেম ডিজাইন, ডাটাবেজ ও ওয়েব ডেভেলপমেন্ট শিখতে পারবেন।"
-    if 'আবহাওয়া' in msg or 'weather' in msg:
-        return "দুঃখিত, আমি এখনো রিয়েল-টাইম আবহাওয়ার তথ্য দিতে পারি না। তবে আমি অন্যান্য প্রশ্নে সাহায্য করতে প্রস্তুত!"
-    if 'জোক' in msg or 'joke' in msg or 'কৌতুক' in msg:
-        jokes = [
-            "প্রোগ্রামারদের প্রিয় জায়গা কোথায়? - 'ক্লাউড' এ! 😄",
-            "কম্পিউটার কেন ঠান্ডা থাকে? কারণ তার অনেক ফ্যান আছে!",
-            "একটি বাগ আরেকটি বাগকে বলল: 'তুমি এত সুন্দর, তোমাকে ডিবাগ করতে ইচ্ছে করছে না!' 😂"
-        ]
-        return random.choice(jokes)
-    if 'কী করতে পারো' in msg or 'what can you do' in msg:
-        return "আমি বাংলা ভাষায় যেকোনো প্রশ্নের উত্তর দিতে পারি।\n- সাধারণ জ্ঞান\n- প্রযুক্তি বিষয়ক তথ্য\n- কৌতুক\n- পরামর্শ\nশুধু জিজ্ঞাসা করুন!"
-    if 'ধন্যবাদ' in msg or 'thanks' in msg or 'thank you' in msg:
-        return "আপনাকে অসংখ্য ধন্যবাদ! আবার জিজ্ঞাসা করতে পারেন। 😊"
-    if 'কেমন আছো' in msg or 'how are you' in msg:
-        return "আমি ভালো আছি, আলহামদুলিল্লাহ! আপনি কেমন আছেন?"
-
-    default_responses = [
-        "আপনার প্রশ্নটি খুবই চমৎকার। আমি আমার জ্ঞান অনুযায়ী উত্তর দেওয়ার চেষ্টা করব।",
-        "বুঝতে পেরেছি। চলুন দেখি কিভাবে সাহায্য করতে পারি।",
-        "এটি একটি গুরুত্বপূর্ণ বিষয়। আমি চেষ্টা করছি বিস্তারিত জানাতে।",
-        "দারুণ প্রশ্ন! আমি যতটুকু জানি তা শেয়ার করছি।"
-    ]
-    return random.choice(default_responses) + "\n\n(আমি এখনো শিখছি, শীঘ্রই আরও স্মার্ট হব!)"
-
 @app.route('/')
 def index():
     return send_from_directory('static', 'index.html')
@@ -92,6 +65,7 @@ def chat():
     user_message = data['message']
     conversation_id = data.get('conversation_id')
 
+    # এডাল্ট কনটেন্ট চেক
     if contains_adult_content(user_message):
         return jsonify({
             'response': '⚠️ দুঃখিত, এই ধরনের কনটেন্ট অনুমোদিত নয়। দয়া করে ভদ্র ভাষায় কথা বলুন।',
@@ -99,9 +73,23 @@ def chat():
             'language': 'bn'
         })
 
-    bot_response = generate_bangla_response(user_message)
+    # ⭐ সীমাহীন AI জেনারেটর (Gemini ব্যবহার করে)
+    try:
+        # ইনস্ট্রাকশন: AI কে নির্দেশ দেওয়া হচ্ছে সবসময় বাংলায় উত্তর দিতে
+        prompt = f"তুমি একজন বাংলা ভাষার এআই সহকারী। তোমার নাম Sami AI। তোমাকে তৈরি করেছেন মোঃ এমতিয়াজ হোসেন সামি (ড্যাফোডিল ইন্টারন্যাশনাল ইউনিভার্সিটি)। নিচের প্রশ্নের উত্তর দাও:\n\nপ্রশ্ন: {user_message}"
+        
+        response = model.generate_content(prompt)
+        bot_response = response.text
+        
+        # মাঝে মাঝে AI ইংরেজি বা হালকা মিক্সড ভাষায় বলতে পারে, তাই ফোর্স করে অনুবাদ রেখে দিলাম
+        # যদি আপনি চান AI সবসময় বাংলায় বলুক, তবে প্রম্পটেই বলে দেওয়া হয়েছে।
+        # ব্যাকআপ হিসেবে আমরা ট্রান্সলেটরও ব্যবহার করতে পারি, তবে Gemini বাংলা ভালোই পারে।
+        
+    except Exception as e:
+        bot_response = f"⚠️ সার্ভারে একটু সমস্যা হচ্ছে। বিস্তারিত: {str(e)}। দয়া করে আবার চেষ্টা করুন।"
+
+    # ডাটাবেসে সংরক্ষণ
     conn = get_db()
-    
     if not conversation_id:
         conversation_id = generate_id()
         title = user_message[:40] + ('...' if len(user_message) > 40 else '')
