@@ -28,14 +28,17 @@
         updateSendButton();
     }
 
-    async function apiCall(endpoint, method = 'GET', body = null) {
-        const options = { method, headers: { 'Content-Type': 'application/json' } };
-        if (body) options.body = JSON.stringify(body);
-        const response = await fetch(endpoint, options);
-        if (!response.ok) throw new Error(`API Error: ${response.status}`);
-        return response.json();
-    }
-
+   async function apiCall(endpoint, method = 'GET', body = null) {
+   
+    const baseUrl = 'https://005sami.pythonanywhere.com'; 
+    const options = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) options.body = JSON.stringify(body);
+    
+    // রিলেটিভ পাথকে ফুল লিঙ্কে রূপান্তর করুন
+    const response = await fetch(baseUrl + endpoint, options); 
+    if (!response.ok) throw new Error(`API Error: ${response.status}`);
+    return response.json();
+}
     async function sendMessage(message) {
         if (isProcessing || !message.trim()) return;
         isProcessing = true;
