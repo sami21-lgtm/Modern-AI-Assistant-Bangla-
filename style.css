@@ -149,21 +149,6 @@ body {
 .conv-item:hover .delete-conv { opacity: 1; }
 .conv-item .delete-conv:hover { color: var(--danger); background: rgba(231,76,60,0.15); }
 
-/* ========== FOOTER CSS ========== */
-.sidebar-footer {
-    padding: 16px;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    line-height: 1.6;
-    margin-top: auto; 
-    font-family: var(--font-en);
-}
-.sidebar-footer strong {
-    color: var(--text-secondary);
-    font-weight: 600;
-}
-
 .main {
     flex: 1;
     display: flex;
@@ -194,7 +179,7 @@ body {
     padding: 6px 12px;
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    margin-left: auto; /* এটি টপ বারের ডানপাশে সরিয়ে দেবে */
+    margin-left: auto;
 }
 .voice-label {
     font-size: 0.85rem;
@@ -291,8 +276,14 @@ input:checked + .slider:before {
     30% { transform: translateY(-10px); opacity: 1; }
 }
 
-/* Input */
-.input-area { padding: 12px 16px; background: var(--bg-primary); border-top: 1px solid rgba(255,255,255,0.05); }
+/* Input Area */
+.input-area { 
+    padding: 12px 16px 8px 16px; 
+    background: var(--bg-primary); 
+    border-top: 1px solid rgba(255,255,255,0.05); 
+    display: flex;
+    flex-direction: column;
+}
 .input-wrapper {
     display: flex;
     align-items: flex-end;
@@ -302,6 +293,7 @@ input:checked + .slider:before {
     padding: 6px 8px 6px 16px;
     border: 1px solid rgba(255,255,255,0.08);
     max-width: 850px;
+    width: 100%;
     margin: 0 auto;
 }
 .input-wrapper:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
@@ -325,11 +317,25 @@ input:checked + .slider:before {
 .send-btn { background: var(--accent); color: #fff; }
 .send-btn:disabled { opacity: 0.4; }
 
+/* ========== MAIN FOOTER CSS (Below Input Box) ========== */
+.main-footer {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+    font-family: var(--font-en);
+}
+.main-footer strong {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
 /* Welcome screen */
 .welcome-screen { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; }
 .welcome-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg, #6c5ce7, #a29bfe); display:flex; align-items:center; justify-content:center; font-size:40px; }
 .welcome-title { font-size:1.6rem; font-weight:700; }
-.welcome-subtitle { color:var(--text-muted); max-width:400px; }
+.welcome-subtitle { color:var(--text-muted); max-width:400px; text-align: center; line-height: 1.5; }
+.welcome-suggestions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
 .suggestion-chip { padding:10px 16px; background:var(--bg-tertiary); border:1px solid rgba(255,255,255,0.1); border-radius:24px; cursor:pointer; font-size:0.82rem; transition:all var(--transition); color:var(--text-secondary); }
 .suggestion-chip:hover { background:rgba(108,92,231,0.2); border-color:var(--accent); color:#fff; }
 
@@ -341,4 +347,5 @@ input:checked + .slider:before {
     .msg-bubble { max-width:85%; font-size:0.88rem; }
     .welcome-avatar { width:60px; height:60px; font-size:30px; }
     .welcome-title { font-size:1.3rem; }
+    .main-footer { font-size: 0.65rem; }
 }
