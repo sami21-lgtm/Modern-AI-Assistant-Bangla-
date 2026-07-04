@@ -258,11 +258,11 @@ input:checked + .slider:before {
 /* Updated Bubble Design (Fixed wrapping & size) */
 .msg-bubble {
     width: fit-content;       
-    min-width: 100px;         /* বাবল যেন একদম ছোট বা চ্যাপ্টা না দেখায় */
+    min-width: 100px;         
     max-width: 72%;
-    padding: 12px 18px;       /* ভেতরের স্পেস একটু বাড়ানো হয়েছে */
+    padding: 12px 18px;       
     border-radius: var(--radius-lg);
-    font-size: 1.05rem;       /* লেখার সাইজ বড় করা হয়েছে */
+    font-size: 1.05rem;       
     line-height: 1.6;
     word-wrap: break-word;
     font-family: var(--font-bn);
@@ -353,4 +353,10 @@ input:checked + .slider:before {
     .welcome-avatar { width:60px; height:60px; font-size:30px; }
     .welcome-title { font-size:1.3rem; }
     .main-footer { font-size: 0.65rem; }
+    
+    /* --- FIX FOR MOBILE BOTTOM CUTOFF (NEW LINES ADDED) --- */
+    .main, .sidebar { height: 100dvh; } /* Fix VH for Mobile */
+    .input-area { padding-bottom: max(8px, env(safe-area-inset-bottom)); } /* Safe area fix for bottom notch */
+    .messages-container { min-height: 0; } /* Flexbox overflow fix */
+    .main-footer { padding-bottom: env(safe-area-inset-bottom); line-height: 1.5; } /* Footer visibility */
 }
