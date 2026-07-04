@@ -142,7 +142,7 @@
             avatar.textContent = msg.role === 'assistant' ? '🤖' : '👤';
             const bubbleWrap = document.createElement('div');
             const bubble = document.createElement('div');
-            bubble.className = 'msg-bubble'; // already uses Bengali font
+            bubble.className = 'msg-bubble'; 
             bubble.innerHTML = escapeHTML(msg.content).replace(/\n/g, '<br>');
             const time = document.createElement('div');
             time.className = 'msg-time';
@@ -259,7 +259,12 @@
         recognition.onend = () => stopListening();
     }
 
-    function setupSpeechSynthesis() { if (!synth) voiceToggleBtn.style.display = 'none'; }
+    function setupSpeechSynthesis() { 
+        if (!synth) {
+            const wrapper = document.querySelector('.voice-toggle-wrapper');
+            if(wrapper) wrapper.style.display = 'none'; 
+        } 
+    }
 
     function startListening() {
         if (!recognition || isListening) return;
@@ -287,15 +292,16 @@
         synth.speak(utterance);
     }
 
-    function toggleVoice() {
-        voiceEnabled = !voiceEnabled;
+    // Updated toggleVoice for Checkbox/Switch
+    function toggleVoice(e) {
+        voiceEnabled = e.target.checked;
+        const voiceStatusText = document.getElementById('voiceStatusText');
+        
         if (voiceEnabled) {
-            voiceToggleBtn.textContent = '🔊 ভয়েস চালু';
-            voiceToggleBtn.classList.add('active');
+            if(voiceStatusText) voiceStatusText.textContent = '🔊 ভয়েস চালু';
             speakText('ভয়েস আউটপুট চালু হয়েছে।');
         } else {
-            voiceToggleBtn.textContent = '🔊 ভয়েস বন্ধ';
-            voiceToggleBtn.classList.remove('active');
+            if(voiceStatusText) voiceStatusText.textContent = '🔊 ভয়েস বন্ধ';
             if (synth) synth.cancel();
         }
     }
@@ -314,7 +320,12 @@
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBtn.click(); }
     });
     micBtn.addEventListener('click', () => isListening ? stopListening() : startListening());
-    voiceToggleBtn.addEventListener('click', toggleVoice);
+    
+    // Listen for 'change' on the new checkbox instead of 'click'
+    if(voiceToggleBtn) {
+        voiceToggleBtn.addEventListener('change', toggleVoice);
+    }
+    
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
     attachSuggestionListeners();
     init();
