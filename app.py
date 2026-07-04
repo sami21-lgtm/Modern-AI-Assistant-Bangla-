@@ -5,7 +5,7 @@ import random
 from datetime import datetime
 
 app = Flask(__name__, static_folder='static', static_url_path='')
-CORS(app) # ফ্রন্টএন্ড থেকে এক্সেস দেওয়ার জন্য এটি যুক্ত করা হলো
+CORS(app, resources={r"/api/*": {"origins": "https://sami21-lgtm.github.io"}})ো
 
 DATABASE = 'sami_ai.db'
 
