@@ -3,18 +3,22 @@ from flask_cors import CORS
 import sqlite3
 import random
 from datetime import datetime
-import os
-import google.generativeai as genai # Gemini AI লাইব্রেরি
+from openai import OpenAI # DeepSeek OpenAI compatible library
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app, resources={r"/api/*": {"origins": "https://sami21-lgtm.github.io"}})
 
 DATABASE = 'sami_ai.db'
 
-# ⚠️ এখানে আপনার Google Gemini API Key বসান (এটি ফ্রি, Google AI Studio থেকে নিতে পারবেন)
-# অথবা আপনার Environment Variable থেকে নিতে পারেন: os.getenv("GEMINI_API_KEY")
-genai.configure(api_key="YOUR_GEMINI_API_KEY_HERE") 
-model = genai.GenerativeModel('gemini-1.5-flash')
+# ⚠️ DeepSeek এপিআই সেটআপ
+# এখানে আপনার DeepSeek API কী বসান 
+DEEPSEEK_API_KEY = "YOUR_DEEPSEEK_API_KEY_HERE"
+
+# DeepSeek ক্লায়েন্ট ইনিশিয়ালাইজ (এটি OpenAI এর ফরম্যাটে কিন্তু URL ভিন্ন)
+client = OpenAI(
+    api_key=DEEPSEEK_API_KEY,
+    base_url="https://api.deepseek.com" 
+)
 
 def get_db():
     conn = sqlite3.connect(DATABASE)
@@ -73,17 +77,21 @@ def chat():
             'language': 'bn'
         })
 
-    # ⭐ সীমাহীন AI জেনারেটর (Gemini ব্যবহার করে)
+    # ⭐ DeepSeek AI দিয়ে সীমাহীন জেনারেটর
     try:
-        # ইনস্ট্রাকশন: AI কে নির্দেশ দেওয়া হচ্ছে সবসময় বাংলায় উত্তর দিতে
-        prompt = f"তুমি একজন বাংলা ভাষার এআই সহকারী। তোমার নাম Sami AI। তোমাকে তৈরি করেছেন মোঃ এমতিয়াজ হোসেন সামি (ড্যাফোডিল ইন্টারন্যাশনাল ইউনিভার্সিটি)। নিচের প্রশ্নের উত্তর দাও:\n\nপ্রশ্ন: {user_message}"
+        # সিস্টেম প্রম্পট: AI কে ১০০% বাংলায় উত্তর দেওয়ার জন্য নির্দেশনা
+        system_prompt = "আপনি একজন বুদ্ধিমান বাংলা এআই সহকারী। আপনার নাম 'Sami AI'। আপনাকে তৈরি করেছেন মোঃ ইমতিয়াজ হোসেন সামি ( সফটওয়্যার ইঞ্জিনিয়ারিং বিভাগ,ড্যাফোডিল ইন্টারন্যাশনাল ইউনিভার্সিটি)। আপনি যেকোনো ভাষায় প্রশ্ন পেলে সবসময় শুধুমাত্র বাংলায় উত্তর দেবেন।"
         
-        response = model.generate_content(prompt)
-        bot_response = response.text
+        response = client.chat.completions.create(
+            model="deepseek-chat", # এখানে "deepseek-reasoner" দিলে R1 লজিক্যাল মডেল কাজ করবে
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
+            ],
+            stream=False
+        )
         
-        # মাঝে মাঝে AI ইংরেজি বা হালকা মিক্সড ভাষায় বলতে পারে, তাই ফোর্স করে অনুবাদ রেখে দিলাম
-        # যদি আপনি চান AI সবসময় বাংলায় বলুক, তবে প্রম্পটেই বলে দেওয়া হয়েছে।
-        # ব্যাকআপ হিসেবে আমরা ট্রান্সলেটরও ব্যবহার করতে পারি, তবে Gemini বাংলা ভালোই পারে।
+        bot_response = response.choices[0].message.content
         
     except Exception as e:
         bot_response = f"⚠️ সার্ভারে একটু সমস্যা হচ্ছে। বিস্তারিত: {str(e)}। দয়া করে আবার চেষ্টা করুন।"
