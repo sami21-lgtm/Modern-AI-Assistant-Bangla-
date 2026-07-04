@@ -52,7 +52,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('627058011_915956991347956_7122116475994450660_n.jpg');  /* ← আপনার ছবির পথ দিন */
+    background-image: url('627058011_915956991347956_7122116475994450660_n.jpg');  
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -149,6 +149,21 @@ body {
 .conv-item:hover .delete-conv { opacity: 1; }
 .conv-item .delete-conv:hover { color: var(--danger); background: rgba(231,76,60,0.15); }
 
+/* ========== FOOTER CSS ========== */
+.sidebar-footer {
+    padding: 16px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    line-height: 1.6;
+    margin-top: auto; 
+    font-family: var(--font-en);
+}
+.sidebar-footer strong {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
 .main {
     flex: 1;
     display: flex;
@@ -169,6 +184,62 @@ body {
     flex-shrink: 0;
 }
 .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+
+/* ========== VOICE TOGGLE SWITCH CSS ========== */
+.voice-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-left: auto; /* এটি টপ বারের ডানপাশে সরিয়ে দেবে */
+}
+.voice-label {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    font-family: var(--font-bn);
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+}
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg-tertiary);
+    transition: .3s;
+    border-radius: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--text-muted);
+    transition: .3s;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: var(--success);
+    border-color: var(--success);
+}
+input:checked + .slider:before {
+    transform: translateX(18px);
+    background-color: #fff;
+}
 
 /* Messages */
 .messages-container {
@@ -205,7 +276,7 @@ body {
     font-size: 0.93rem;
     line-height: 1.7;
     word-wrap: break-word;
-    font-family: var(--font-bn);  /* Always Bengali font */
+    font-family: var(--font-bn);
 }
 .message-row.user .msg-bubble { background: var(--user-bubble); border: 1px solid var(--user-bubble-border); }
 .message-row.bot .msg-bubble { background: var(--bot-bubble); border: 1px solid var(--bot-bubble-border); }
