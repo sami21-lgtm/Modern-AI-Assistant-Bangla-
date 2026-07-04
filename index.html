@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sami AI - বাংলা চ্যাটবট | Developed by Md Emtiaz Hossain Sami</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background image overlay (set your photo in CSS) -->
+    <div class="bg-image"></div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🤖</div>
+            <div>
+                <div class="sidebar-title">Sami AI</div>
+                <div class="sidebar-subtitle">বাংলা চ্যাটবট</div>
+            </div>
+        </div>
+        <button class="new-chat-btn" id="newChatBtn">
+            <span>＋</span> নতুন কথোপকথন
+        </button>
+        <div class="conversations-list" id="conversationsList"></div>
+        <div class="sidebar-footer">
+            Developed by <strong>Md Emtiaz Hossain Sami</strong><br>
+            Dept. of Software Engineering<br>
+            <strong>Daffodil International University</strong>
+        </div>
+    </aside>
+
+    <!-- Main Chat -->
+    <div class="main" id="mainArea">
+        <div class="top-bar">
+            <button class="menu-toggle" id="menuToggle" title="মেনু">☰</button>
+            <div class="top-bar-avatar">🤖</div>
+            <div class="top-bar-info">
+                <div class="top-bar-name">Sami AI</div>
+                <div class="top-bar-status"><span class="status-dot"></span> সক্রিয় ও প্রস্তুত</div>
+            </div>
+            <button class="voice-toggle-btn" id="voiceToggleBtn" title="ভয়েস চালু/বন্ধ">
+                🔊 ভয়েস বন্ধ
+            </button>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-avatar">🤖</div>
+                <div class="welcome-title">Sami AI তে স্বাগতম! 👋</div>
+                <div class="welcome-subtitle">
+                    আমি আপনার বাংলা ভাষার এআই সহকারী। আপনি ইংরেজি বা বাংলায় লিখুন,
+                    আমি সবসময় বাংলায় উত্তর দেব। যেকোনো প্রশ্ন করুন!
+                </div>
+                <div class="welcome-suggestions">
+                    <div class="suggestion-chip" data-msg="তুমি কে?">👋 তুমি কে?</div>
+                    <div class="suggestion-chip" data-msg="What can you do?">💡 তুমি কী করতে পারো?</div>
+                    <div class="suggestion-chip" data-msg="আজকের আবহাওয়া কেমন?">🌤 আবহাওয়া</div>
+                    <div class="suggestion-chip" data-msg="Tell me a joke">😄 একটি কৌতুক বলো</div>
+                    <div class="suggestion-chip" data-msg="সফটওয়্যার ইঞ্জিনিয়ারিং নিয়ে কিছু বলো">💻 সফটওয়্যার</div>
+                    <div class="suggestion-chip" data-msg="Daffodil International University সম্পর্কে বলো">🎓 ডিআইইউ</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea id="userInput" rows="1" placeholder="এখানে লিখুন... বা ভয়েস ব্যবহার করুন..."></textarea>
+                <button class="mic-btn" id="micBtn" title="ভয়েস ইনপুট">🎤</button>
+                <button class="send-btn" id="sendBtn" title="পাঠান">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
