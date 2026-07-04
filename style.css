@@ -56,7 +56,7 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: brightness(0.35) blur(4px);
+    filter: brightness(0.65) blur(0px);
     z-index: -1;
 }
 
