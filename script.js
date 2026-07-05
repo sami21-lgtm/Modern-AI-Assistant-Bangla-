@@ -28,26 +28,30 @@
         updateSendButton();
     }
 
-   async function apiCall(endpoint, method = 'GET', body = null) {
-   
-    const baseUrl = 'https://005sami.pythonanywhere.com'; 
-    const options = { method, headers: { 'Content-Type': 'application/json' } };
-    if (body) options.body = JSON.stringify(body);
-    
-    // রিলেটিভ পাথকে ফুল লিঙ্কে রূপান্তর করুন
-    const response = await fetch(baseUrl + endpoint, options); 
-    if (!response.ok) throw new Error(`API Error: ${response.status}`);
-    return response.json();
-}
+    // আপনার PythonAnywhere লাইভ সার্ভারের সাথে যোগাযোগের মূল ফাংশন
+    async function apiCall(endpoint, method = 'GET', body = null) {
+        const baseUrl = 'https://005sami.pythonanywhere.com';
+        const options = { 
+            method, 
+            headers: { 'Content-Type': 'application/json' } 
+        };
+        if (body) options.body = JSON.stringify(body);
+
+        const response = await fetch(baseUrl + endpoint, options);
+        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+        return response.json();
+    }
+
     async function sendMessage(message) {
         if (isProcessing || !message.trim()) return;
         isProcessing = true;
         updateSendButton();
         showWelcomeScreen(false);
+
         const userMsg = {
             role: 'user',
             content: message.trim(),
-            language: 'bn', // We store as Bangla context
+            language: 'bn',
             created_at: new Date().toISOString()
         };
         messages.push(userMsg);
@@ -62,17 +66,21 @@
                 message: message.trim(),
                 conversation_id: currentConversationId,
             });
+            
             if (data.conversation_id) currentConversationId = data.conversation_id;
+            
             showTypingIndicator(false);
+            
             const botMsg = {
                 role: 'assistant',
-                content: data.response,  // Always Bangla from backend
+                content: data.response,
                 language: 'bn',
                 created_at: new Date().toISOString()
             };
             messages.push(botMsg);
             renderMessages();
             scrollToBottom();
+            
             if (voiceEnabled) speakText(data.response);
             loadConversations();
         } catch (error) {
@@ -96,7 +104,9 @@
             const data = await apiCall('/api/conversations');
             conversations = data.conversations || [];
             renderConversationsList();
-        } catch (error) { console.error(error); }
+        } catch (error) { 
+            console.error(error); 
+        }
     }
 
     async function loadConversationMessages(convId) {
@@ -109,7 +119,9 @@
             showWelcomeScreen(messages.length === 0);
             renderConversationsList();
             closeSidebar();
-        } catch (error) { console.error(error); }
+        } catch (error) { 
+            console.error(error); 
+        }
     }
 
     async function deleteConversation(convId, e) {
@@ -124,7 +136,9 @@
                 showWelcomeScreen(true);
             }
             await loadConversations();
-        } catch (error) { console.error(error); }
+        } catch (error) { 
+            console.error(error); 
+        }
     }
 
     function renderMessages() {
@@ -135,25 +149,39 @@
             showWelcomeScreen(true);
             return;
         }
-        if (messages.length === 0) { showWelcomeScreen(true); return; }
+        if (messages.length === 0) { 
+            showWelcomeScreen(true); 
+            return; 
+        }
+        
         showWelcomeScreen(false);
         messages.forEach(msg => {
             const row = document.createElement('div');
             row.className = `message-row ${msg.role}`;
+            
             const avatar = document.createElement('div');
             avatar.className = `msg-avatar ${msg.role === 'assistant' ? 'bot-avatar' : 'user-avatar'}`;
             avatar.textContent = msg.role === 'assistant' ? '🤖' : '👤';
+            
             const bubbleWrap = document.createElement('div');
             const bubble = document.createElement('div');
-            bubble.className = 'msg-bubble'; 
+            bubble.className = 'msg-bubble';
             bubble.innerHTML = escapeHTML(msg.content).replace(/\n/g, '<br>');
+            
             const time = document.createElement('div');
             time.className = 'msg-time';
             time.textContent = formatTime(msg.created_at);
+            
             bubbleWrap.appendChild(bubble);
             bubbleWrap.appendChild(time);
-            if (msg.role === 'assistant') { row.appendChild(avatar); row.appendChild(bubbleWrap); }
-            else { row.appendChild(bubbleWrap); row.appendChild(avatar); }
+            
+            if (msg.role === 'assistant') { 
+                row.appendChild(avatar); 
+                row.appendChild(bubbleWrap); 
+            } else { 
+                row.appendChild(bubbleWrap); 
+                row.appendChild(avatar); 
+            }
             messagesContainer.appendChild(row);
         });
     }
@@ -172,10 +200,12 @@
             item.className = `conv-item ${conv.id === currentConversationId ? 'active' : ''}`;
             item.textContent = conv.title || 'শিরোনামহীন';
             item.addEventListener('click', () => loadConversationMessages(conv.id));
+            
             const delBtn = document.createElement('button');
             delBtn.className = 'delete-conv';
             delBtn.textContent = '🗑';
             delBtn.addEventListener('click', (e) => deleteConversation(conv.id, e));
+            
             item.appendChild(delBtn);
             conversationsList.appendChild(item);
         });
@@ -215,7 +245,10 @@
         document.querySelectorAll('.suggestion-chip').forEach(chip => {
             chip.addEventListener('click', function() {
                 const msg = this.getAttribute('data-msg');
-                if (msg) { userInput.value = msg; sendMessage(msg); }
+                if (msg) { 
+                    userInput.value = msg; 
+                    sendMessage(msg); 
+                }
             });
         });
     }
@@ -234,51 +267,85 @@
                 messagesContainer.appendChild(indicator);
                 scrollToBottom();
             }
-        } else { if (existing) existing.remove(); }
+        } else { 
+            if (existing) existing.remove(); 
+        }
     }
 
-    function scrollToBottom() { setTimeout(() => messagesContainer.scrollTop = messagesContainer.scrollHeight, 50); }
+    function scrollToBottom() { 
+        setTimeout(() => messagesContainer.scrollTop = messagesContainer.scrollHeight, 50); 
+    }
 
-    function escapeHTML(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
-    function formatTime(iso) { if (!iso) return ''; return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
-    function autoResizeTextarea() { userInput.style.height = 'auto'; userInput.style.height = Math.min(userInput.scrollHeight, 150) + 'px'; }
-    function updateSendButton() { sendBtn.disabled = !userInput.value.trim() || isProcessing; }
+    function escapeHTML(str) { 
+        const div = document.createElement('div'); 
+        div.textContent = str; 
+        return div.innerHTML; 
+    }
+    
+    function formatTime(iso) { 
+        if (!iso) return ''; 
+        return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
+    }
+    
+    function autoResizeTextarea() { 
+        userInput.style.height = 'auto'; 
+        userInput.style.height = Math.min(userInput.scrollHeight, 150) + 'px'; 
+    }
+    
+    function updateSendButton() { 
+        sendBtn.disabled = !userInput.value.trim() || isProcessing; 
+    }
 
     function setupSpeechRecognition() {
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SR) { micBtn.style.display = 'none'; return; }
+        if (!SR) { 
+            micBtn.style.display = 'none'; 
+            return; 
+        }
         recognition = new SR();
         recognition.continuous = false;
         recognition.interimResults = true;
         recognition.onresult = (event) => {
             let transcript = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) transcript += event.results[i][0].transcript;
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
             userInput.value = transcript;
             autoResizeTextarea();
             updateSendButton();
-            if (event.results[0]?.isFinal) { stopListening(); if (transcript.trim()) sendMessage(transcript.trim()); }
+            if (event.results[0]?.isFinal) { 
+                stopListening(); 
+                if (transcript.trim()) sendMessage(transcript.trim()); 
+            }
         };
         recognition.onerror = () => stopListening();
         recognition.onend = () => stopListening();
     }
 
-    function setupSpeechSynthesis() { 
+    function setupSpeechSynthesis() {
         if (!synth) {
             const wrapper = document.querySelector('.voice-toggle-wrapper');
-            if(wrapper) wrapper.style.display = 'none'; 
-        } 
+            if(wrapper) wrapper.style.display = 'none';
+        }
     }
 
     function startListening() {
         if (!recognition || isListening) return;
-        recognition.lang = 'bn-BD';  // Always Bengali voice input
-        try { recognition.start(); isListening = true; micBtn.classList.add('listening'); micBtn.textContent = '🔴'; } catch (e) {}
+        recognition.lang = 'bn-BD'; 
+        try { 
+            recognition.start(); 
+            isListening = true; 
+            micBtn.classList.add('listening'); 
+            micBtn.textContent = '🔴'; 
+        } catch (e) {}
     }
 
     function stopListening() {
         if (!recognition) return;
         try { recognition.stop(); } catch (e) {}
-        isListening = false; micBtn.classList.remove('listening'); micBtn.textContent = '🎤';
+        isListening = false; 
+        micBtn.classList.remove('listening'); 
+        micBtn.textContent = '🎤';
     }
 
     function speakText(text) {
@@ -295,11 +362,10 @@
         synth.speak(utterance);
     }
 
-    // Updated toggleVoice for Checkbox/Switch
     function toggleVoice(e) {
         voiceEnabled = e.target.checked;
         const voiceStatusText = document.getElementById('voiceStatusText');
-        
+
         if (voiceEnabled) {
             if(voiceStatusText) voiceStatusText.textContent = '🔊 ভয়েস চালু';
             speakText('ভয়েস আউটপুট চালু হয়েছে।');
@@ -309,27 +375,54 @@
         }
     }
 
-    function openSidebar() { sidebar.classList.add('open'); sidebarOverlay.classList.add('show'); }
-    function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('show'); }
+    function openSidebar() { 
+        sidebar.classList.add('open'); 
+        sidebarOverlay.classList.add('show'); 
+    }
+    
+    function closeSidebar() { 
+        sidebar.classList.remove('open'); 
+        sidebarOverlay.classList.remove('show'); 
+    }
 
     menuToggle.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
     sidebarOverlay.addEventListener('click', closeSidebar);
-    newChatBtn.addEventListener('click', () => {
-        currentConversationId = null; messages = []; renderMessages(); showWelcomeScreen(true); closeSidebar(); userInput.focus();
-    });
-    sendBtn.addEventListener('click', () => { if (userInput.value.trim() && !isProcessing) sendMessage(userInput.value.trim()); });
-    userInput.addEventListener('input', () => { autoResizeTextarea(); updateSendButton(); });
-    userInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBtn.click(); }
-    });
-    micBtn.addEventListener('click', () => isListening ? stopListening() : startListening());
     
-    // Listen for 'change' on the new checkbox instead of 'click'
+    newChatBtn.addEventListener('click', () => {
+        currentConversationId = null; 
+        messages = []; 
+        renderMessages(); 
+        showWelcomeScreen(true); 
+        closeSidebar(); 
+        userInput.focus();
+    });
+    
+    sendBtn.addEventListener('click', () => { 
+        if (userInput.value.trim() && !isProcessing) sendMessage(userInput.value.trim()); 
+    });
+    
+    userInput.addEventListener('input', () => { 
+        autoResizeTextarea(); 
+        updateSendButton(); 
+    });
+    
+    userInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { 
+            e.preventDefault(); 
+            sendBtn.click(); 
+        }
+    });
+    
+    micBtn.addEventListener('click', () => isListening ? stopListening() : startListening());
+
     if(voiceToggleBtn) {
         voiceToggleBtn.addEventListener('change', toggleVoice);
     }
+
+    document.addEventListener('keydown', (e) => { 
+        if (e.key === 'Escape') closeSidebar(); 
+    });
     
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
     attachSuggestionListeners();
     init();
     userInput.focus();
