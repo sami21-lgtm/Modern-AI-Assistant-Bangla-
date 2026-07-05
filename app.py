@@ -7,11 +7,14 @@ import google.generativeai as genai
 
 # অ্যাপ সেটআপ
 app = Flask(__name__, static_folder='static', static_url_path='')
-CORS(app, resources={r"/api/*": {"origins": "https://sami21-lgtm.github.io"}})
+
+# CORS আপডেট করা হয়েছে যাতে গিটহাব পেজেস থেকে কোনো কানেকশন এরর না আসে
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 DATABASE = 'sami_ai.db'
 
 # জেমিনি এপিআই কনফিগারেশন
+# ⚠️ এখানে আপনার আসল Gemini API Key বসাতে ভুলবেন না
 genai.configure(api_key="YOUR_GEMINI_API_KEY_HERE")
 model = genai.GenerativeModel('gemini-1.5-flash')
 
@@ -55,7 +58,8 @@ def chat():
         return jsonify({'response': '⚠️ দুঃখিত, এই ধরনের কনটেন্ট অনুমোদিত নয়।', 'conversation_id': conversation_id, 'language': 'bn'})
 
     try:
-        system_prompt = "আপনি একজন বুদ্ধিমান বাংলা এআই সহকারী। আপনার নাম 'Sami AI'। আপনাকে তৈরি করেছেন মোঃ ইমতিয়াজ হোসেন সামি (সফটওয়্যার ইঞ্জিনিয়ারিং বিভাগ, ড্যাফোডিল ইন্টারন্যাশনাল ইউনিভার্সিটি)। আপনি সবসময় শুধুমাত্র বাংলায় উত্তর দেবেন।"
+        # এআই-এর পরিচয়ে আপনার প্রজেক্টের কাঙ্ক্ষিত ক্রেডিট লাইনটি যুক্ত করা হয়েছে
+        system_prompt = "আপনি একজন বুদ্ধিমান বাংলা এআই সহকারী। আপনার নাম 'Sami AI'। আপনাকে তৈরি করেছেন মোঃ ইমতিয়াজ হোসেন সামি (সফটওয়্যার ইঞ্জিনিয়ারিং বিভাগ, ড্যাফোডিল ইন্টারন্যাশনাল ইউনিভার্সিটি) - developed by Md. Emtiaz Hossain Sami 2026. আপনি সবসময় শুধুমাত্র বাংলায় উত্তর দেবেন।"
         response = model.generate_content(f"{system_prompt}\nUser: {user_message}")
         bot_response = response.text
     except Exception as e:
