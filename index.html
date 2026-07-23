@@ -9,15 +9,8 @@
 </head>
 <body>
 
-    <!-- API Key Setup Modal -->
-    <div class="api-modal" id="apiModal">
-        <div class="modal-content">
-            <h3>🔑 Set Gemini API Key</h3>
-            <p>To safely run this app on GitHub Pages, enter your Google Gemini API Key:</p>
-            <input type="password" id="apiKeyInput" placeholder="AIzaSy..." />
-            <button id="saveKeyBtn">Save API Key</button>
-        </div>
-    </div>
+    <!-- Background Image Layer -->
+    <div class="bg-image-overlay"></div>
 
     <div class="app-container">
         <!-- Sidebar -->
@@ -31,7 +24,6 @@
             </div>
 
             <button class="btn-primary" id="newRxBtn">＋ New Prescription</button>
-            <button class="btn-settings" id="openSettingsBtn">⚙️ Change API Key</button>
 
             <div class="history-title">Saved History</div>
             <div class="history-list" id="historyList"></div>
@@ -45,7 +37,7 @@
             </header>
 
             <div class="content-body">
-                <!-- Disease Input Card -->
+                <!-- Input Card -->
                 <div class="input-card">
                     <label for="diseaseInput">Enter Disease Name or Medical Symptoms:</label>
                     <div class="input-group">
@@ -60,7 +52,7 @@
                     <p>AI Doctor is analyzing symptoms to generate prescription & recommended tests...</p>
                 </div>
 
-                <!-- Prescription Pad (Printable Frame) -->
+                <!-- Prescription Pad Frame -->
                 <div class="prescription-pad" id="prescriptionPad">
                     <div class="pad-header">
                         <div class="doc-info">
