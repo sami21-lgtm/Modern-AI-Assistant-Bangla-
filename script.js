@@ -9,13 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const historyList = document.getElementById("historyList");
     const newRxBtn = document.getElementById("newRxBtn");
 
-    // LocalStorage থেকে নিরাপদভাবে API Key লোড করা (GitHub ব্লক ঠেকাতে)
+    // LocalStorage থেকে নিরাপদভাবে API Key লোড করা
     let GEMINI_API_KEY = localStorage.getItem("DR_SAMI_GEMINI_KEY") || "";
 
-    // API Key নেয়ার নিরাপদ ফাংশন
+    
     function getApiKey() {
         if (!GEMINI_API_KEY) {
-            const userKey = prompt("🔑 Please enter your Gemini API Key (Saved safely in your browser):");
+            const userKey = prompt("🔑 Please enter your Gemini API Key:");
             if (userKey && userKey.trim() !== "") {
                 GEMINI_API_KEY = userKey.trim();
                 localStorage.setItem("DR_SAMI_GEMINI_KEY", GEMINI_API_KEY);
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     newRxBtn.addEventListener("click", () => {
         diseaseInput.value = "";
-        rxOutput.innerHTML = `<div class="placeholder-text">Enter symptoms above and click <strong>"Generate Prescription & Tests"</strong> to create a prescription.</div>`;
+        rxOutput.innerHTML = `<div class="placeholder-text">Enter symptoms above and click <strong>"Generate Prescription & Tests"</strong> to create a digital prescription.</div>`;
         rxDisease.textContent = "--";
         rxDate.textContent = "--/--/----";
     });
@@ -96,7 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`, {
+            // 🔥 এখানে আপডেট করা মডেল gemini-2.5-flash লিংক করা হয়েছে
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -112,11 +113,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.error) {
-                // Key মেয়াদ উত্তীর্ণ বা ভুল হলে সাথে সাথে Reset করে দেওয়া
                 if (data.error.code === 400 || data.error.code === 401 || data.error.code === 403) {
                     localStorage.removeItem("DR_SAMI_GEMINI_KEY");
                     GEMINI_API_KEY = "";
-                    throw new Error("Invalid or Revoked API Key! Key has been reset. Please click Generate again and paste a fresh API Key.");
+                    throw new Error("Invalid API Key! Key has been reset. Please click Generate again and enter a valid API key.");
                 }
                 throw new Error(data.error.message || "API Error occurred.");
             }
