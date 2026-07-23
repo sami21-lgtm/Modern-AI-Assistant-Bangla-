@@ -182,3 +182,84 @@ textarea:focus { border-color: var(--primary); }
     .content-body { padding: 0; max-width: 100%; }
     .prescription-pad { box-shadow: none; border: none; padding: 0; }
 }
+
+/* =========================================================
+   📱 MOBILE & TABLET RESPONSIVE FIXES (zate mobile e না ফাটে)
+   ========================================================= */
+
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .app-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    /* Sidebar full width on mobile */
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .history-list {
+        max-height: 120px;
+    }
+
+    .main-content {
+        overflow-y: visible;
+    }
+
+    .top-header {
+        padding: 12px 15px;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .content-body {
+        padding: 15px 10px;
+    }
+
+    /* Prescription Pad Responsive Adjustments */
+    .prescription-pad {
+        padding: 20px 15px;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        word-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .pad-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .rx-logo {
+        font-size: 2.2rem;
+    }
+
+    .patient-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .rx-body h3 {
+        font-size: 1rem;
+    }
+
+    .rx-body {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    textarea {
+        font-size: 0.9rem;
+    }
+}
