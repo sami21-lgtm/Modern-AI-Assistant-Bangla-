@@ -1,76 +1,102 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BornoAI AI - বাংলা চ্যাটবট | Developed by Md Emtiaz Hossain Sami</title>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Dr. Sami AI - Digital Prescription & Test Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="bg-image"></div>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">🤖</div>
-            <div>
-                <div class="sidebar-title">Borno AI</div>
-                <div class="sidebar-subtitle">বাংলা চ্যাটবট</div>
-            </div>
+    <!-- API Key Setup Modal -->
+    <div class="api-modal" id="apiModal">
+        <div class="modal-content">
+            <h3>🔑 Set Gemini API Key</h3>
+            <p>To safely run this app on GitHub Pages, enter your Google Gemini API Key:</p>
+            <input type="password" id="apiKeyInput" placeholder="AIzaSy..." />
+            <button id="saveKeyBtn">Save API Key</button>
         </div>
-        <button class="new-chat-btn" id="newChatBtn">
-            <span>＋</span> নতুন কথোপকথন
-        </button>
-        <div class="conversations-list" id="conversationsList"></div>
-    </aside>
+    </div>
 
-    <div class="main" id="mainArea">
-        <div class="top-bar">
-            <button class="menu-toggle" id="menuToggle" title="মেনু">☰</button>
-            <div class="top-bar-avatar">🤖</div>
-            <div class="top-bar-info">
-                <div class="top-bar-name">Sami AI</div>
-                <div class="top-bar-status"><span class="status-dot"></span> সক্রিয় ও প্রস্তুত</div>
-            </div>
-            
-            <div class="voice-toggle-wrapper">
-                <span class="voice-label" id="voiceStatusText">🔊 ভয়েস বন্ধ</span>
-                <label class="switch">
-                    <input type="checkbox" id="voiceToggleBtn">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-        </div>
-
-        <div class="messages-container" id="messagesContainer">
-            <div class="welcome-screen" id="welcomeScreen">
-                <div class="welcome-avatar">🤖</div>
-                <div class="welcome-title">Borno AI তে স্বাগতম! 👋</div>
-                <div class="welcome-subtitle">
-                    আমি আপনার বাংলা ভাষার এআই সহকারী। আপনি ইংরেজি বা বাংলায় লিখুন,
-                    আমি সবসময় বাংলায় উত্তর দেব। যেকোনো প্রশ্ন করুন!
-                </div>
-                <div class="welcome-suggestions">
-                    <div class="suggestion-chip" data-msg="তুমি কে?">👋 তুমি কে?</div>
-                    <div class="suggestion-chip" data-msg="What can you do?">💡 তুমি কী করতে পারো?</div>
-                    <div class="suggestion-chip" data-msg="আজকের আবহাওয়া কেমন?">🌤 আবহাওয়া</div>
-                    <div class="suggestion-chip" data-msg="Tell me a joke">😄 একটি কৌতুক বলো</div>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="logo">🩺</span>
+                <div>
+                    <h2>Dr. Sami AI</h2>
+                    <p>Smart Prescription & Test Generator</p>
                 </div>
             </div>
-        </div>
 
-        <div class="input-area">
-            <div class="input-wrapper">
-                <textarea id="userInput" rows="1" placeholder="এখানে লিখুন... বা ভয়েস ব্যবহার করুন..."></textarea>
-                <button class="mic-btn" id="micBtn" title="ভয়েস ইনপুট">🎤</button>
-                <button class="send-btn" id="sendBtn" title="পাঠান">➤</button>
+            <button class="btn-primary" id="newRxBtn">＋ New Prescription</button>
+            <button class="btn-settings" id="openSettingsBtn">⚙️ Change API Key</button>
+
+            <div class="history-title">Saved History</div>
+            <div class="history-list" id="historyList"></div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="doctor-badge">👨‍⚕️ AI Medical Specialist Pad</div>
+                <button class="print-btn" id="printBtn" onclick="window.print()">🖨️ Print / Download PDF</button>
+            </header>
+
+            <div class="content-body">
+                <!-- Disease Input Card -->
+                <div class="input-card">
+                    <label for="diseaseInput">Enter Disease Name or Medical Symptoms:</label>
+                    <div class="input-group">
+                        <textarea id="diseaseInput" rows="2" placeholder="Example: High fever for 3 days, severe headache, dry cough, and fatigue..."></textarea>
+                        <button id="generateBtn">Generate Prescription & Tests 🚀</button>
+                    </div>
+                </div>
+
+                <!-- Loader -->
+                <div class="loader" id="loader" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>AI Doctor is analyzing symptoms to generate prescription & recommended tests...</p>
+                </div>
+
+                <!-- Prescription Pad (Printable Frame) -->
+                <div class="prescription-pad" id="prescriptionPad">
+                    <div class="pad-header">
+                        <div class="doc-info">
+                            <h2>Dr. Sami AI (Medical Assistant)</h2>
+                            <p>Medical & Diagnostic AI Service</p>
+                            <p class="sub">Developed by: Md. Emtiaz Hossain Sami (DIU)</p>
+                        </div>
+                        <div class="rx-logo">Rx</div>
+                    </div>
+                    <hr class="divider">
+
+                    <div class="patient-info">
+                        <span><strong>Date:</strong> <span id="rxDate">--/--/----</span></span>
+                        <span><strong>Chief Complaint:</strong> <span id="rxDisease">--</span></span>
+                    </div>
+                    <hr class="divider">
+
+                    <!-- AI Generated Content -->
+                    <div class="rx-body" id="rxOutput">
+                        <div class="placeholder-text">
+                            Enter your symptoms above and click <strong>"Generate Prescription & Tests"</strong> to create a digital prescription.
+                        </div>
+                    </div>
+
+                    <!-- Medical Disclaimer -->
+                    <div class="pad-footer">
+                        ⚠️ <strong>Emergency Warning:</strong> This is an AI-generated suggestion for informational purposes only. Always consult a registered medical practitioner (MBBS) before starting medications or diagnostic testing.
+                    </div>
+                </div>
             </div>
-            
-            <div class="main-footer">
+
+            <!-- Footer -->
+            <footer class="footer">
                 Developed by <strong>Md Emtiaz Hossain Sami</strong> | Dept. of Software Engineering, <strong>Daffodil International University</strong>
-            </div>
-        </div>
+            </footer>
+        </main>
     </div>
 
     <script src="script.js"></script>
