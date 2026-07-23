@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     
+    
     const GEMINI_API_KEY = "AQ.Ab8RN6Ke1-8yvBVg4KKf5MdJC7NEA2OzRzlcgUZ88JQNUhXVow";
 
     const diseaseInput = document.getElementById("diseaseInput");
@@ -24,11 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
     generateBtn.addEventListener("click", async () => {
         const diseaseText = diseaseInput.value.trim();
         if (!diseaseText) {
-            alert("Please enter a disease name or symptoms!");
+            alert("Please enter a disease name or symptoms! / অনুগ্রহ করে রোগের নাম বা লক্ষণ লিখুন।");
             return;
         }
 
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === "AQ.Ab8RN6Ke1-8yvBVg4KKf5MdJC7NEA2OzRzlcgUZ88JQNUhXVow") {
+        if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
             alert("Please set your valid Gemini API Key inside script.js!");
             return;
         }
@@ -36,12 +37,17 @@ document.addEventListener("DOMContentLoaded", () => {
         loader.style.display = "block";
         generateBtn.disabled = true;
 
+        // 🌐 Auto Language Detection Prompt (Bangla + English)
         const systemPrompt = `
         You are an experienced and highly competent medical specialist AI (Dr. Sami AI). 
-        The user will provide a disease name or medical symptoms. Your job is to generate a comprehensive, professional digital prescription and a list of recommended diagnostic tests.
+        The user will provide a disease name or medical symptoms in EITHER English or Bengali (বাংলা).
 
-        Strictly output the response in clear English using the following structure:
+        CRITICAL LANGUAGE RULE:
+        1. Detect the language used by the user.
+        2. If the user writes in BENGALI (বাংলা), generate the entire prescription strictly in BENGALI.
+        3. If the user writes in ENGLISH, generate the entire prescription strictly in ENGLISH.
 
+        Structure for English Output:
         ### 🩺 Clinical Diagnosis / Observation
         [Provide a brief clinical assessment based on symptoms]
 
@@ -59,6 +65,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ### 🚨 Red Flag Warning Symptoms
         - [Critical symptoms that require immediate emergency hospital visitation]
+
+        Structure for Bengali Output:
+        ### 🩺 সম্ভাব্য শারীরিক সমস্যা / ডায়াগনসিস
+        [সংক্ষিপ্ত স্বাস্থ্যগত পর্যবেক্ষণ]
+
+        ### 📋 প্রয়োজনীয় পরীক্ষাসমূহ (Diagnostic Tests)
+        - [টেস্টের নাম] - (কারণ/উদ্দেশ্য)
+
+        ### 💊 ওষুধের তালিকা (Rx)
+        ১. **[ওষুধের নাম]** - [সেবনের মাত্রা: যেমন ১-০-১] - [খাওয়ার নিয়ম: যেমন খাবারের পর] - [মেয়াদ: যেমন ৫ দিন]
+
+        ### 📝 জীবনযাপন ও প্রয়োজনীয় পরামর্শ
+        - [পরামর্শ ১]
+        - [পরামর্শ ২]
+
+        ### 🚨 জরুরি সতর্কতা (Red Flags)
+        - [যেসব জরুরি লক্ষণ দেখা দিলে দ্রুত হাসপাতালে যেতে হবে]
         `;
 
         try {
