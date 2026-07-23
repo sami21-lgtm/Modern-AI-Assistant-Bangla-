@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const historyList = document.getElementById("historyList");
     const newRxBtn = document.getElementById("newRxBtn");
 
-    // LocalStorage থেকে নিরাপদভাবে API Key লোড করা
+    
     let GEMINI_API_KEY = localStorage.getItem("DR_SAMI_GEMINI_KEY") || "";
 
     
