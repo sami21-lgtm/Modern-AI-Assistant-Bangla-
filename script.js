@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     
-    
+   
     const GEMINI_API_KEY = "AQ.Ab8RN6Ke1-8yvBVg4KKf5MdJC7NEA2OzRzlcgUZ88JQNUhXVow";
 
     const diseaseInput = document.getElementById("diseaseInput");
@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
-            alert("Please set your valid Gemini API Key inside script.js!");
+        if (!GEMINI_API_KEY) {
+            alert("API Key missing in script.js!");
             return;
         }
 
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
             saveToHistory(diseaseText, aiResponse, today);
 
         } catch (error) {
-            alert("Error: " + error.message + "\nPlease check your API Key in script.js.");
+            alert("Error: " + error.message + "\nPlease check your API Key / Network Connection.");
         } finally {
             loader.style.display = "none";
             generateBtn.disabled = false;
