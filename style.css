@@ -20,12 +20,12 @@ body {
     position: relative;
 }
 
-/* Background Custom Image Layer */
+
 .bg-image-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    /* 📸 CHANGE 'my-photo.jpg' TO YOUR IMAGE FILE NAME */
-    background-image: url('my-photo.jpg'); 
+   
+    background-image: url('627058011_915956991347956_7122116475994450660_n.jpg'); 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
