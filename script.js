@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
     
-   
-    const GEMINI_API_KEY = "AQ.Ab8RN6Ke1-8yvBVg4KKf5MdJC7NEA2OzRzlcgUZ88JQNUhXVow";
-
     const diseaseInput = document.getElementById("diseaseInput");
     const generateBtn = document.getElementById("generateBtn");
     const loader = document.getElementById("loader");
@@ -12,11 +9,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const historyList = document.getElementById("historyList");
     const newRxBtn = document.getElementById("newRxBtn");
 
-    let history = JSON.parse(localStorage.getItem("RX_HISTORY")) || [];
+    // LocalStorage থেকে নিরাপদভাবে API Key লোড করা (GitHub ব্লক ঠেকাতে)
+    let GEMINI_API_KEY = localStorage.getItem("DR_SAMI_GEMINI_KEY") || "";
+
+    // API Key নেয়ার নিরাপদ ফাংশন
+    function getApiKey() {
+        if (!GEMINI_API_KEY) {
+            const userKey = prompt("🔑 Please enter your Gemini API Key (Saved safely in your browser):");
+            if (userKey && userKey.trim() !== "") {
+                GEMINI_API_KEY = userKey.trim();
+                localStorage.setItem("DR_SAMI_GEMINI_KEY", GEMINI_API_KEY);
+            }
+        }
+        return GEMINI_API_KEY;
+    }
 
     newRxBtn.addEventListener("click", () => {
         diseaseInput.value = "";
-        rxOutput.innerHTML = `<div class="placeholder-text">Enter your symptoms above and click <strong>"Generate Prescription & Tests"</strong> to create a digital prescription.</div>`;
+        rxOutput.innerHTML = `<div class="placeholder-text">Enter symptoms above and click <strong>"Generate Prescription & Tests"</strong> to create a prescription.</div>`;
         rxDisease.textContent = "--";
         rxDate.textContent = "--/--/----";
     });
@@ -29,8 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (!GEMINI_API_KEY) {
-            alert("API Key missing in script.js!");
+        const activeKey = getApiKey();
+        if (!activeKey) {
+            alert("API Key is required to generate prescriptions!");
             return;
         }
 
@@ -85,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -101,6 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.error) {
+                // Key মেয়াদ উত্তীর্ণ বা ভুল হলে সাথে সাথে Reset করে দেওয়া
+                if (data.error.code === 400 || data.error.code === 401 || data.error.code === 403) {
+                    localStorage.removeItem("DR_SAMI_GEMINI_KEY");
+                    GEMINI_API_KEY = "";
+                    throw new Error("Invalid or Revoked API Key! Key has been reset. Please click Generate again and paste a fresh API Key.");
+                }
                 throw new Error(data.error.message || "API Error occurred.");
             }
 
@@ -109,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Format and Display Output
             const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             rxDate.textContent = today;
-            rxDisease.textContent = diseaseText.substring(0, 35) + (diseaseText.length > 35 ? "..." : "");
+            rxDisease.textContent = diseaseText.substring(0, 30) + (diseaseText.length > 30 ? "..." : "");
             
             rxOutput.innerHTML = formatMarkdown(aiResponse);
 
@@ -117,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
             saveToHistory(diseaseText, aiResponse, today);
 
         } catch (error) {
-            alert("Error: " + error.message + "\nPlease check your API Key / Network Connection.");
+            alert("Error: " + error.message);
         } finally {
             loader.style.display = "none";
             generateBtn.disabled = false;
